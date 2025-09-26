@@ -1,0 +1,2 @@
+1. Lexical Analysis (retrieve the tokens from the markdown file).
+2. Parser/Code Generator. Parse the tokens and generate HTML.

@@ -1,0 +1,43 @@
+========================================
+What's in a Markdown?
+What's in a HTML file?
+========================================
+
+Header
+Paragraph (body)
+Tables
+Bullet points
+Number points
+Horizontal line (page divider?)
+Footer
+
+========================================
+What formatting features are available?
+========================================
+
+Code snippets
+Italic
+Bold
+Underline
+URL links
+Anchor link
+
+
+document            ->  section*
+section             ->  header
+                        | paragraph
+                        | table
+                        | bullet-list
+                        | number-list
+header              ->  ("#")+ SPACE content
+paragraph           ->  content
+bullet-list         ->  "-" SPACE content
+number-list         ->  NUMBER "." SPACE content
+content             ->  (STRING | SPACE)+ (NEWLINE | EOF)
+
+
+========================================
+Features (To-Do)
+========================================
+- Nested lists
+- Tables
