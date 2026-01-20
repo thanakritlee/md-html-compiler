@@ -1,0 +1,1 @@
+int scanToken(int thing);

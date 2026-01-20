@@ -23,17 +23,34 @@ URL links
 Anchor link
 
 
+---
+Grammar in prioritised order
+---
+
 document            ->  section*
 section             ->  header
                         | paragraph
                         | table
                         | bullet-list
                         | number-list
+                        | code
+                        | image
 header              ->  ("#")+ SPACE content
-paragraph           ->  content
 bullet-list         ->  "-" SPACE content
 number-list         ->  NUMBER "." SPACE content
-content             ->  (STRING | SPACE)+ (NEWLINE | EOF)
+paragraph           ->  content
+content             ->  (STRING | SPACE | inline-code)+ (NEWLINE | EOF)
+inline-code         ->  "`" (STRING | SPACE)+ "`"
+code                ->  "```" (STRING | SPACE)+ NEWLINE "```"
+image               ->  "!" "[" (STRING | SPACE)+ "]" "(" STRING ")" (NEWLINE | EOF)
+link                ->  "[" (STRING | SPACE)+ "]" "(" STRING ")"
+
+
+STRING              -> (ALPHANUMBERIC | SPECIAL-CHARACTER )+
+
+
+??? SPACE   -> \s \t
+whats's \r?
 
 
 ========================================
