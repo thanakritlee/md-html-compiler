@@ -129,9 +129,12 @@ Token getNextToken() {
 
     char currentChar = advance();
 
-    switch (currentChar)
-    {
-    case '#':
-        return getHeadingToken();
+    switch (currentChar) {
+        case '#':
+            return getHeadingToken();
+        case ' ':
+            return makeToken(TOKEN_SPACE);
+        case '\t':
+            return makeToken(TOKEN_TAB);
     }
 }

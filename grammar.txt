@@ -48,7 +48,7 @@ link                ->  "[" (STRING | SPACE | TAB)+ "]" "(" STRING ")"
 
 NUMBER              -> ("0" | ... | "9")+
 STRING              -> (ALPHANUMBERIC | SPECIAL-CHARACTER )+
-SPACE               -> "\s"
+SPACE               -> " "
 TAB                 -> "\t"
 NEWLINE             -> "\n"
 EOF                 -> "\0"
