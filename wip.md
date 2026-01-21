@@ -82,3 +82,21 @@ I'll be putting a EOF character at the end of the source file buffer so that the
 
 # Clarifying the grammar
 SPACE and TAB. I've add some more grammar productions of space and tab. I want to have them as different tokens because they'll be use for formatting purposes in the HTML code/pre tags. In other tags such as bullet points, number list, and heading, they make no difference and will be removed in the output.
+
+# Practical example of why tests are needed
+I have initially implemented the EOF token when I was working on the heading tokenisation. I didn't add a test case for the EOF token then and was just assuming that it was working correctly.
+
+I've only recently added a test case for it and found that it was buggy. I've listed the bugs here:
+- I used a double qoute on "\0" instead of '\0'. It should have been single qoute because it's a character comparison.
+- I didn't add an asterisk in front of the pointer to get the data at the memory address. Was tokeniser.current instead of *tokeniser.current. Without the asterisk, I was comparing a memory address against a character, which is a C semantic error.
+
+----------------------
+
+Now I've just got a quick fun though about syntax vs semantic error. Using normal spoken language as an analogy:
+A syntax error is spelling a word incorrectly.
+e.g. "windough"
+
+A semantic error is forming a sentence that doesn't make sense or is meaningless.
+e.g. "jump fox the rabbit over the"
+
+Like I said, just a fun thought lmao.

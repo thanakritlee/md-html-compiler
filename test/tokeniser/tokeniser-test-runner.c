@@ -3,6 +3,7 @@
 #include "../../source/tokeniser.h"
 #include "./heading.h"
 #include "./space-and-tab.h"
+#include "./newline-and-eof.h"
 
 void run_tokeniser_tests() {
     printf("=================================\n");
@@ -11,6 +12,7 @@ void run_tokeniser_tests() {
 
     runHeadingTests();
     runSpaceAndTabTests();
+    runNewlineAndEOFTests();
 
     printf("\n");
 }

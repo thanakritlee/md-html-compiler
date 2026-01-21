@@ -29,7 +29,7 @@ static Token makeToken(TokenType type) {
  * Check if encounter NULL string terminator.
  */
 static bool isAtEOF() {
-    return tokeniser.current == "\0";
+    return *tokeniser.current == '\0';
 }
 
 /**
@@ -136,5 +136,7 @@ Token getNextToken() {
             return makeToken(TOKEN_SPACE);
         case '\t':
             return makeToken(TOKEN_TAB);
+        case '\n':
+            return makeToken(TOKEN_NEWLINE);
     }
 }

@@ -4,6 +4,7 @@
 typedef enum {
     TOKEN_H1, TOKEN_H2, TOKEN_H3, TOKEN_H4, TOKEN_H5, TOKEN_H6,
     TOKEN_SPACE, TOKEN_TAB,
+    TOKEN_NEWLINE,
     TOKEN_EOF,
 } TokenType;
 
