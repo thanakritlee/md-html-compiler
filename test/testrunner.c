@@ -1,14 +1,6 @@
-#include "../source/tokeniser.h"
-#include "stdio.h"
+#include "tokeniser/tokeniser-test-runner.h"
 
 int main () {
-    int ret;
-    ret = scanToken(12);
-    if (ret == 12) {
-        printf("PASS\n");
-    } else {
-        printf("FAIL\n");
-    }
-
+    run_tokeniser_tests();
     return 0;
 }

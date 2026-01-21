@@ -36,6 +36,7 @@ I think in conclusion I want to go with the second approach because the output H
 
 ## Main Program
 This is the main C program. It takes the input/output file and call the rest of the components.
+Does the initialisation of the various modules: Tokeniser and Compiler.
 Might need to use a shell script test runner on this component.
 
 ## File Reader/Writer
@@ -65,5 +66,16 @@ This compiler is basically only the front end halve of the compiler. It stops at
 
 Additionally, after doing a quick re-read of the dragon compiler book, it looks like this compiler I'm writing is using a Predictive Parser, which is a specific type of Recursive Descend Parser. It uses lookahead(s) to predict the nonterminal productions to use.
 
+----------------------
+
+"Crafting Interpreters" called this compiler a "Single-Pass Compiler". In a single-pass compiler, SDT is use to generate codes from actions that is associated with each productions in the grammar. This is basically what I'm doing in my compiler. So I guess I can call my compiler a single pass compiler. Single-pass compiler generates the output code directly in the parser phase.
+
+----------------------
+
+In a way, this compiler could even be classified as a transcompiler, because it's compiling one high level language to another high level language. Markdown and HTML aren't programming languages, but they're both markup languages. We're just compiling from one markup language to another.
+
 # What kind of grammar is this? Context Free Grammar? Recursive Grammar?
 I better re-read the Theory of Computation book or the Dragon Compiler book.
+
+# EOF
+I'll be putting a EOF character at the end of the source file buffer so that the tokeniser can recognise the end of the buffer and stop. In the Dragon compiler book, I think this is called a Sentinel character. Is it only one sentinel for the whole source file, or is it just a sentinel per each buffer, given that older compilers might have limited buffer space.
