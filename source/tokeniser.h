@@ -1,3 +1,6 @@
+#ifndef tokeniser_h
+#define tokeniser_h
+
 typedef enum {
     TOKEN_H1, TOKEN_H2, TOKEN_H3, TOKEN_H4, TOKEN_H5, TOKEN_H6,
     TOKEN_EOF,
@@ -11,3 +14,5 @@ typedef struct {
 
 void initTokeniser(const char* source);
 Token getNextToken();
+
+#endif

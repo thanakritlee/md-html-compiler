@@ -79,3 +79,6 @@ I better re-read the Theory of Computation book or the Dragon Compiler book.
 
 # EOF
 I'll be putting a EOF character at the end of the source file buffer so that the tokeniser can recognise the end of the buffer and stop. In the Dragon compiler book, I think this is called a Sentinel character. Is it only one sentinel for the whole source file, or is it just a sentinel per each buffer, given that older compilers might have limited buffer space.
+
+# Clarifying the grammar
+SPACE and TAB. I've add some more grammar productions of space and tab. I want to have them as different tokens because they'll be use for formatting purposes in the HTML code/pre tags. In other tags such as bullet points, number list, and heading, they make no difference and will be removed in the output.
