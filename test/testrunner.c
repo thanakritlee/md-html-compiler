@@ -1,6 +1,6 @@
 #include "tokeniser/tokeniser-test-runner.h"
 
 int main () {
-    run_tokeniser_tests();
+    runTokeniserTests();
     return 0;
 }
