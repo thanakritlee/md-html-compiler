@@ -39,7 +39,7 @@ header              ->  ("#")+ (SPACE | TAB)+ content
 bullet-list         ->  "-" (SPACE | TAB)+ content
 number-list         ->  NUMBER "." (SPACE | TAB)+ content
 paragraph           ->  content
-content             ->  (STRING | SPACE | TAB | inline-code)+ (NEWLINE | EOF)
+content             ->  (STRING | SPACE | TAB | inline-code | link)+ (NEWLINE | EOF)
 inline-code         ->  "`" (STRING | SPACE | TAB)+ "`"
 code                ->  "```" (STRING | SPACE | TAB)+ NEWLINE "```"
 image               ->  "!" "[" (STRING | SPACE | TAB)+ "]" "(" STRING ")" (NEWLINE | EOF)
@@ -53,6 +53,16 @@ TAB                 -> "\t"
 NEWLINE             -> "\n"
 EOF                 -> "\0"
 
+reserved special characters
+- _     underscore
+- *     asterisk
+- !     exclamation
+- ( )   left paren / right paren
+- [ ]   left bracket / right bracket
+- < >   left angled bracket / right angled bracket (need to be escaped in HTML)
+- .
+- #
+- `
 
 ========================================
 Features (To-Do)

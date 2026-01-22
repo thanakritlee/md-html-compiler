@@ -6,6 +6,7 @@ typedef enum {
     TOKEN_SPACE, TOKEN_TAB,
     TOKEN_NEWLINE,
     TOKEN_EOF,
+    TOKEN_STRING, TOKEN_NUMBER,
 } TokenType;
 
 typedef struct {

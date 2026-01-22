@@ -4,6 +4,7 @@
 #include "./heading.h"
 #include "./space-and-tab.h"
 #include "./newline-and-eof.h"
+#include "./string.h"
 
 void run_tokeniser_tests() {
     printf("=================================\n");
@@ -13,6 +14,7 @@ void run_tokeniser_tests() {
     runHeadingTests();
     runSpaceAndTabTests();
     runNewlineAndEOFTests();
+    runStringTests();
 
     printf("\n");
 }

@@ -120,6 +120,99 @@ Token getHeadingToken() {
     }
 }
 
+/**
+ * Check whether a character is a reserved special character or not.
+ * These characters are lexemes to other tokens.
+ */
+bool isReservedSpecialCharacter(char c) {
+    if (c == '-'  || 
+        c == '*'  || 
+        c == '!'  || 
+        c == '('  || 
+        c == ')'  || 
+        c == '['  || 
+        c == ']'  || 
+        c == '<'  || 
+        c == '>'  || 
+        c == '.'  ||
+        c == '#'  ||
+        c == '`'  ||
+        c == ' '  ||
+        c == '\t' ||
+        c == '\n' ||
+        c == '\0') 
+    {
+        return true;
+    }
+    return false;
+}
+
+bool isDigit(char c) {
+    if (c >= '0' && c <= '9') {
+        return true;
+    }
+    return false;
+}
+
+bool isAlphaOrSpecialChar(char c) {
+    if (!isReservedSpecialCharacter(c) &&
+        !isDigit(c)) {
+            return true;
+        }
+    return false;
+}
+
+/**
+ * A STRING token can consist of alphabets, numbers, and any
+ * non-reserved special characters.
+ */
+Token getStringToken() {
+    while (!isReservedSpecialCharacter(peek(1))) {
+        advance();
+    }
+    return makeToken(TOKEN_STRING);
+}
+
+/**
+ * Return a NUMBER token.
+ * Doesn't look for anymore digits for the NUMBER token lexeme
+ * , because all digits in the lexeme has already been identified.
+ */
+Token getNumberToken() {
+    return makeToken(TOKEN_NUMBER);
+}
+
+/**
+ * Identify whether the iteral token is a STRING or a NUMBER token.
+ * A NUMBER token is a sequence of digits not concatenated with 
+ * any alphabets or non-reserved special characters.
+ * A STRING token is a sequence of alphanumeric and non-reserved
+ * special characters concatenated together.
+ */
+Token getLiteralToken(char currentChar) {    
+    // If first character is an alphabet or a non-reserved
+    // special character, then it's not a digit.
+    if (isAlphaOrSpecialChar(currentChar)) {
+        return getStringToken();
+    }
+
+    // Look ahead through sequence of digits, until encounter
+    // a non-digit character.
+    while (isDigit(peek(1))) {
+        advance();
+    }
+    // If the non-digit character is an alphabet, or a 
+    // non-reserved special character, then it's a STRING token.
+    if (isAlphaOrSpecialChar(peek(1))) {
+        return getStringToken();
+    } else {
+        // Otherwise, it's a NUMBER token.
+        // This is because this lookahead character could, for example
+        // , be a newline, or a space etc. (i.e. a reserved special character)
+        return getNumberToken();
+    }
+}
+
 Token getNextToken() {
     tokeniser.start = tokeniser.current;
 
@@ -128,6 +221,10 @@ Token getNextToken() {
     }
 
     char currentChar = advance();
+
+    if (isAlphaOrSpecialChar(currentChar) | isDigit(currentChar)) {
+        return getLiteralToken(currentChar);
+    }
 
     switch (currentChar) {
         case '#':

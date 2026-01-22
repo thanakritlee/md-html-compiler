@@ -100,3 +100,28 @@ A semantic error is forming a sentence that doesn't make sense or is meaningless
 e.g. "jump fox the rabbit over the"
 
 Like I said, just a fun thought lmao.
+
+# What is a STRING terminal?
+I've been at this all morning since 9. It's 1040 now. I'm trying to define what is considered a STRING terminal in the grammar. It's pretty difficult because I want to be able to use special characters in the string too. Some special characters are more special than others though.
+
+I've listed some special characters that are used in the Markdown grammar to identify which production it is. Both underscore and asterisk are used for emphasis such as bold and italic. The exclamation mark is use for image insert. The left/right parenthesis/bracket are use for image and weblink.
+- _     underscore
+- *     asterisk
+- !     exclamation
+- ( )   left paren / right paren
+- [ ]   left bracket / right bracket
+- .
+
+There's also the angled bracket which need to be tokenised because they are needed to escaped in HTML.
+- < >   left angled bracket / right angled bracket (need to be escaped in HTML)
+
+So, I think these can still be considered a part of the string, but they just need to be their own tokens. In the case that they are part of a seperate grammar productions, they can be identified properly and use.
+
+Also, if I encounter anymore "special" special characters in the future, I can just seperate them out into their own tokens. But these are just the ones that I've identified so far.
+
+----------------------
+
+To be honest, this part is pretty challenging for me. I found myself reworking and refining alot of the grammar productions and terminals as I work on the compiler. Little tweak here and there. I guess this shows that I can't really fully define a perfect grammar upfront before starting the work on the compiler.
+
+### References
+- https://www.w3schools.com/html/html_entities.asp
