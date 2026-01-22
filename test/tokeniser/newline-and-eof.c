@@ -10,9 +10,8 @@ void newline() {
     char* source = "\n\0";
     initTokeniser(source);
 
-    Token token;
-    token = getNextToken();
-    assert(token.type == TOKEN_NEWLINE);
+    Token token = getNextToken();
+    assertWithMsg(token.type == TOKEN_NEWLINE, "Expect TOKEN_NEWLINE");
 }
 
 void newlines() {
@@ -21,11 +20,10 @@ void newlines() {
     char* source = "\n\n\0";
     initTokeniser(source);
 
-    Token firstToken = getNextToken();
-    Token secondToken = getNextToken();
-    assert(
-        firstToken.type == TOKEN_NEWLINE && 
-        secondToken.type == TOKEN_NEWLINE);
+    Token token = getNextToken();
+    assertWithMsg(token.type == TOKEN_NEWLINE, "Expect first TOKEN_NEWLINE");
+    token = getNextToken();
+    assertWithMsg(token.type == TOKEN_NEWLINE, "Expect second TOKEN_NEWLINE");
 }
 
 void eof() {
@@ -35,7 +33,7 @@ void eof() {
     initTokeniser(source);
 
     Token token = getNextToken();
-    assert(token.type == TOKEN_EOF);
+    assertWithMsg(token.type == TOKEN_EOF, "Expect TOKEN_EOF");
 }
 
 void runNewlineAndEOFTests() {

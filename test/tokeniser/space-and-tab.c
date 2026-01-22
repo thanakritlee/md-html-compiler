@@ -9,10 +9,9 @@ void space() {
     char* source = " \0";
     initTokeniser(source);
 
-    Token token;
-    token = getNextToken();
+    Token token = getNextToken();
 
-    assert(token.type == TOKEN_SPACE);
+    assertWithMsg(token.type == TOKEN_SPACE, "Expect TOKEN_SPACE");
 }
 
 void tab() {
@@ -21,10 +20,9 @@ void tab() {
     char* source = "\t\0";
     initTokeniser(source);
 
-    Token token;
-    token = getNextToken();
+    Token token = getNextToken();
 
-    assert(token.type == TOKEN_TAB);
+    assertWithMsg(token.type == TOKEN_TAB, "Expect TOKEN_TAB");
 }
 
 void runSpaceAndTabTests() {

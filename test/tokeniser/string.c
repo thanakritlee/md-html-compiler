@@ -10,8 +10,7 @@ void stringBasic() {
     char* source = "Hello\0";
     initTokeniser(source);
 
-    Token token;
-    token = getNextToken();
+    Token token = getNextToken();
     
     assertWithMsg(token.type == TOKEN_STRING, "Expect TOKEN_STRING");
     assertWithMsg(token.length == 5, "Expect token length of 5");
@@ -24,8 +23,7 @@ void stringAlphanumberic1() {
     char* source = "Hello123\0";
     initTokeniser(source);
 
-    Token token;
-    token = getNextToken();
+    Token token = getNextToken();
 
     assertWithMsg(token.type == TOKEN_STRING, "Expect TOKEN_STRING");
     assertWithMsg(token.length == 8, "Expect token length of 8");
@@ -38,8 +36,7 @@ void stringAlphanumberic2() {
     char* source = "123Hello\0";
     initTokeniser(source);
 
-    Token token;
-    token = getNextToken();
+    Token token = getNextToken();
 
     assertWithMsg(token.type == TOKEN_STRING, "Expect TOKEN_STRING");
     assertWithMsg(token.length == 8, "Expect token length of 8");
@@ -52,8 +49,7 @@ void stringAlphanumberic3() {
     char* source = "Hel123lo\0";
     initTokeniser(source);
 
-    Token token;
-    token = getNextToken();
+    Token token = getNextToken();
 
     assertWithMsg(token.type == TOKEN_STRING, "Expect TOKEN_STRING");
     assertWithMsg(token.length == 8, "Expect token length of 8");
@@ -66,8 +62,7 @@ void stringSpecialChar1() {
     char* source = "Hello$^\0";
     initTokeniser(source);
 
-    Token token;
-    token = getNextToken();
+    Token token = getNextToken();
 
     assertWithMsg(token.type == TOKEN_STRING, "Expect TOKEN_STRING");
     assertWithMsg(token.length == 7, "Expect token length of 7");
@@ -80,8 +75,7 @@ void stringSpecialChar2() {
     char* source = "&@Hello\0";
     initTokeniser(source);
 
-    Token token;
-    token = getNextToken();
+    Token token = getNextToken();
 
     assertWithMsg(token.type == TOKEN_STRING, "Expect TOKEN_STRING");
     assertWithMsg(token.length == 7, "Expect token length of 7");
@@ -98,8 +92,7 @@ void stringSpecialChar3() {
     char* source = "H~el-l/o+\0";
     initTokeniser(source);
 
-    Token token;
-    token = getNextToken();
+    Token token = getNextToken();
 
     assertWithMsg(token.type == TOKEN_STRING, "Expect TOKEN_STRING");
     assertWithMsg(token.length == 4, "Expect token length of 4");

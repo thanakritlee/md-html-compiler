@@ -9,10 +9,9 @@ void heading_1() {
     char* source = "# Title\0";
     initTokeniser(source);
 
-    Token token;
-    token = getNextToken();
+    Token token = getNextToken();
 
-    assert(token.type == TOKEN_H1);
+    assertWithMsg(token.type == TOKEN_H1, "Expect TOKEN_H1");
 }
 
 void heading_2() {
@@ -21,10 +20,9 @@ void heading_2() {
     char* source = "## Title\0";
     initTokeniser(source);
 
-    Token token;
-    token = getNextToken();
+    Token token = getNextToken();
 
-    assert(token.type == TOKEN_H2);
+    assertWithMsg(token.type == TOKEN_H2, "Expect TOKEN_H2");
 }
 
 void heading_3() {
@@ -33,10 +31,9 @@ void heading_3() {
     char* source = "### Title\0";
     initTokeniser(source);
 
-    Token token;
-    token = getNextToken();
+    Token token = getNextToken();
 
-    assert(token.type == TOKEN_H3);
+    assertWithMsg(token.type == TOKEN_H3, "Expect TOKEN_H3");
 }
 
 void heading_4() {
@@ -45,10 +42,9 @@ void heading_4() {
     char* source = "#### Title\0";
     initTokeniser(source);
 
-    Token token;
-    token = getNextToken();
+    Token token = getNextToken();
 
-    assert(token.type == TOKEN_H4);
+    assertWithMsg(token.type == TOKEN_H4, "Expect TOKEN_H4");
 }
 
 void heading_5() {
@@ -57,10 +53,9 @@ void heading_5() {
     char* source = "##### Title\0";
     initTokeniser(source);
 
-    Token token;
-    token = getNextToken();
+    Token token = getNextToken();
 
-    assert(token.type == TOKEN_H5);
+    assertWithMsg(token.type == TOKEN_H5, "Expect TOKEN_H5");
 }
 
 void heading_6() {
@@ -68,11 +63,10 @@ void heading_6() {
 
     char* source = "###### Title\0";
     initTokeniser(source);
+    
+    Token token = getNextToken();
 
-    Token token;
-    token = getNextToken();
-
-    assert(token.type == TOKEN_H6);
+    assertWithMsg(token.type == TOKEN_H6, "Expect TOKEN_H6");
 }
 
 void heading_default() {
@@ -81,10 +75,9 @@ void heading_default() {
     char* source = "########## Title\0";
     initTokeniser(source);
 
-    Token token;
-    token = getNextToken();
+    Token token = getNextToken();
 
-    assert(token.type == TOKEN_H6);
+    assertWithMsg(token.type == TOKEN_H6, "Expect TOKEN_H6");
 }
 
 void runHeadingTests() {
