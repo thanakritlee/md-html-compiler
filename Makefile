@@ -6,6 +6,7 @@ testrunner: test/testrunner.c test/common.o \
 			test/tokeniser/newline-and-eof.o \
 			test/tokeniser/string.o \
 			test/tokeniser/number.o \
+			test/tokeniser/special-character.o \
 			test/parser/parser-test-runner.o \
 			test/parser/heading.o \
 			source/parser.o \
@@ -16,7 +17,8 @@ testrunner: test/testrunner.c test/common.o \
 	source/tokeniser.o test/common.o test/tokeniser/tokeniser-test-runner.o \
 	test/tokeniser/heading.o test/tokeniser/space-and-tab.o \
 	test/tokeniser/newline-and-eof.o test/tokeniser/string.o \
-	test/tokeniser/number.o test/parser/parser-test-runner.o \
+	test/tokeniser/number.o test/tokeniser/special-character.o \
+	test/parser/parser-test-runner.o \
 	test/parser/heading.o source/parser.o source/buffer.o \
 	test/buffer/buffer-test-runner.o test/buffer/buffer.o
 
@@ -46,6 +48,9 @@ test/tokeniser/string.o: test/tokeniser/string.c test/tokeniser/string.h
 
 test/tokeniser/number.o: test/tokeniser/number.c test/tokeniser/number.h
 	gcc -c test/tokeniser/number.c -o test/tokeniser/number.o
+
+test/tokeniser/special-character.o: test/tokeniser/special-character.c test/tokeniser/special-character.h
+	gcc -c test/tokeniser/special-character.c -o test/tokeniser/special-character.o
 
 test/parser/heading.o: test/parser/heading.c test/parser/heading.h
 	gcc -c test/parser/heading.c -o test/parser/heading.o

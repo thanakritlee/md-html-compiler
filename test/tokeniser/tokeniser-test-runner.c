@@ -5,6 +5,7 @@
 #include "./newline-and-eof.h"
 #include "./string.h"
 #include "./number.h"
+#include "./special-character.h"
 
 void runTokeniserTests() {
     printf("=================================\n");
@@ -16,6 +17,7 @@ void runTokeniserTests() {
     runNewlineAndEOFTests();
     runStringTests();
     runNumberTests();
+    runSpecialCharacterTests();
 
     printf("\n");
 }

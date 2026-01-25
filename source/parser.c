@@ -1,3 +1,5 @@
+#include <stdbool.h>
+
 #include "./buffer.h"
 #include "./tokeniser.h"
 
@@ -15,11 +17,264 @@ void advance() {
     parser.currentToken = getNextToken();
 }
 
+/**
+ * Check whether a token is a reserved HTML
+ * character or not.
+ * Reserved HTML characters are required to be
+ * converted to HTML code e.g. &lt and &gt.
+ */
+bool isReservedHTMLCharacter(Token token) {
+    if (token.type == TOKEN_LESS_THAN || 
+        token.type == TOKEN_GREATER_THAN) {
+            return true;
+        }
+    return false;
+}
+
+/**
+ * Convert the reserved HTML character to HTML code
+ * and write it to the buffer.
+ */
+void writeReservedHTMLCharacter(Token token) {
+    switch (token.type) {
+        case TOKEN_LESS_THAN:
+            writeToBuffer("&lt", 3);
+            break;
+        case TOKEN_GREATER_THAN:
+            writeToBuffer("&gt", 3);
+            break;
+    }
+}
+
+/**
+ * Restore both the parser and tokeniser to an earlier state.
+ * 
+ * The predictive parser does multiple lookahead of tokens to determine
+ * which grammar rule to use. This function is use at the end after a grammar
+ * rule has been determined to restore the parser and tokeniser back to the
+ * state before doing the lookahead.
+ */
+void restoreParserAndTokeniser(Token previousToken, Token currentToken) {
+    parser.previousToken = previousToken;
+    parser.currentToken = currentToken;
+    restoreTokeniser(currentToken.start + currentToken.length);
+}
+
+/**
+ * Do multiple tokens lookahead to check whether the opening 
+ * TOKEN_GRAVE_ACCENT has a closing TOKEN_GRAVE_ACCENT to fit 
+ * into the inline code rule or not.
+ * Inline code format: `...`
+ */
+bool isInlineCodeRule() {
+    /**
+     * Initial state:
+     * - currentToken is the opening TOKEN_GRAVE_ACCENT.
+     * End state:
+     * - currentToken is the opening TOKEN_GRAVE_ACCENT.
+     */
+
+    Token originalPrevToken = parser.previousToken;
+    Token originalCurrToken = parser.currentToken;
+
+    advance();
+    while (parser.currentToken.type != TOKEN_GRAVE_ACCENT && 
+        parser.currentToken.type != TOKEN_NEWLINE &&
+        parser.currentToken.type != TOKEN_EOF)
+        {
+            advance();
+        }
+
+    Token currToken = parser.currentToken;
+
+    restoreParserAndTokeniser(originalPrevToken, originalCurrToken);
+
+    if (currToken.type == TOKEN_GRAVE_ACCENT) {
+        // Has a closing TOKEN_GRAVE_ACCENT.
+        // Therefore, an inline code rule is valid.
+        return true;
+    }
+    return false;
+}
+
+/**
+ * Produce a HTML inline code:
+ * <code> .... </code>
+ */
+void inlineCodeRule() {
+    /**
+     * Initial state:
+     * - currentToken is the opening TOKEN_GRAVE_ACCENT.
+     * Ending state:
+     * - currentToken is the ending TOKEN_GRAVE_ACCENT.
+     */
+
+    writeToBuffer("<code>", 6);
+
+    advance();
+    while (parser.currentToken.type != TOKEN_GRAVE_ACCENT) {
+        if (isReservedHTMLCharacter(parser.currentToken)) {
+            writeReservedHTMLCharacter(parser.currentToken);
+            advance();
+            continue;
+        }
+        writeToBuffer(parser.currentToken.start, parser.currentToken.length);
+        advance();
+    }
+
+    writeToBuffer("</code>", 7);
+}
+
+/**
+ * Do multiple tokens lookahead to determine whether it is
+ * a link rule or not.
+ * link rule format: [...](...)
+ */
+bool isLinkRule() {
+    /**
+     * Initial state:
+     * - currentToken is the opening TOKEN_OPEN_SQUARE_BRACKET.
+     * End state:
+     * - currentToken is the opening TOKEN_OPEN_SQUARE_BRACKET.
+     */
+
+    Token originalPrevToken = parser.previousToken;
+    Token originalCurrToken = parser.currentToken;
+
+    advance();
+    while (parser.currentToken.type != TOKEN_CLOSE_SQUARE_BRACKET &&
+        parser.currentToken.type != TOKEN_NEWLINE &&
+        parser.currentToken.type != TOKEN_EOF)
+        {
+            // Skip through the link description section.
+            advance();
+        }
+    // If a closing square bracket hasn't been found, then
+    // it's not a link rule.
+    if (parser.currentToken.type != TOKEN_CLOSE_SQUARE_BRACKET) {
+        restoreParserAndTokeniser(originalPrevToken, originalCurrToken);
+        return false;
+    }
+    advance();
+    // If a opening parenthesis hasn't been found, then
+    // it's not a link rule.
+    if (parser.currentToken.type != TOKEN_OPEN_PARENTHESIS) {
+        restoreParserAndTokeniser(originalPrevToken, originalCurrToken);
+        return false;
+    }
+    while (parser.currentToken.type != TOKEN_CLOSE_PARENTHESIS &&
+        // Skip through the link URL section.
+        parser.currentToken.type != TOKEN_NEWLINE &&
+        parser.currentToken.type != TOKEN_EOF)
+        {
+            advance();
+        }
+
+    Token currToken = parser.currentToken;
+
+    restoreParserAndTokeniser(originalPrevToken, originalCurrToken);
+
+    if (currToken.type == TOKEN_CLOSE_PARENTHESIS) {
+        // Has a closing TOKEN_CLOSE_PARENTHESIS.
+        // Therefore, a link rule is valid.
+        return true;
+    }
+    return false;
+}
+
+
+/**
+ * Produce a HTML anchor hyperlink:
+ * <a href=" ... "> ... </h1>
+ * 
+ * Markdown link and HTML anchor tag has their link URL and link description
+ * positions inversed of each other.
+ * This function skip through the Markdown description, grab the link URL and
+ * write it to the buffer, then circle back to the description to write it to
+ * the buffer.
+ */
+void linkRule() {
+    /**
+     * Initial state:
+     * - currentToken is the opening TOKEN_OPEN_SQUARE_BRACKET.
+     * Ending state:
+     * - currentToken is the closing TOKEN_CLOSE_PARENTHESIS.
+     */
+
+    advance();
+    Token descriptionPrevToken = parser.previousToken;
+    Token descriptionCurrToken = parser.currentToken;
+
+    writeToBuffer("<a href=\"", 9);
+
+    // Skip through the link description section.
+    while (parser.currentToken.type != TOKEN_CLOSE_SQUARE_BRACKET)
+    {
+        advance();
+    }
+    // 2 advances() to skip through the open parenthesis token.
+    advance();
+    advance();
+    while (parser.currentToken.type != TOKEN_CLOSE_PARENTHESIS)
+    {        
+        // Write link URL to buffer.
+        writeToBuffer(parser.currentToken.start, parser.currentToken.length);        
+        advance();
+    }
+
+    writeToBuffer("\">", 2);
+
+    Token closingParenPrevToken = parser.previousToken;
+    Token closingParenCurrToken = parser.currentToken;
+
+    // Reset both tokeniser and parser back to the link
+    // description section.
+    restoreParserAndTokeniser(descriptionPrevToken, descriptionCurrToken);
+
+    while (parser.currentToken.type != TOKEN_CLOSE_SQUARE_BRACKET)
+    {
+        // Write link description to buffer.
+        if (isReservedHTMLCharacter(parser.currentToken)) {
+            writeReservedHTMLCharacter(parser.currentToken);
+            advance();
+            continue;
+        }
+        writeToBuffer(parser.currentToken.start, parser.currentToken.length);
+        advance();
+    }
+
+    writeToBuffer("</a>", 4);
+
+    // Set both tokeniser and parser to the state at the
+    // end of the link rule, which is the closing parenthesis token.
+    restoreParserAndTokeniser(closingParenPrevToken, closingParenCurrToken);
+}
+
 void contentRule() {
     while (parser.currentToken.type != TOKEN_NEWLINE &&
         parser.currentToken.type != TOKEN_EOF) {
-            // TODO: Handle inline-code and link rules.
-            // TODO: Handle reserved special characters.            
+            // TODO: Handle reserved special characters.
+
+            if (isReservedHTMLCharacter(parser.currentToken)) {
+                writeReservedHTMLCharacter(parser.currentToken);
+                advance();
+                continue;
+            }
+
+            if (parser.currentToken.type == TOKEN_GRAVE_ACCENT &&
+                isInlineCodeRule()) {
+                    inlineCodeRule();
+                    advance();
+                    continue;
+            }
+
+            if (parser.currentToken.type == TOKEN_OPEN_SQUARE_BRACKET &&
+                isLinkRule()) {
+                    linkRule();
+                    advance();
+                    continue;
+            }
+
             writeToBuffer(parser.currentToken.start, parser.currentToken.length);
             advance();
         }
@@ -30,6 +285,10 @@ void contentRule() {
     }
 }
 
+/**
+ * Produce a HTML heading:
+ * <h1> ... </h1>
+ */
 void headingRule() {
     /**
      * Initial state:
@@ -78,6 +337,12 @@ void headingRule() {
     writeToBuffer(closeHeadingStr, 6);
 }
 
+/**
+ * Produce a HTML paragraph:
+ * <p>
+ * ...
+ * </p>
+ */
 void paragraphRule() {
     writeToBuffer("<p>\n", 4);
 

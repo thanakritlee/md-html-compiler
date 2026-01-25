@@ -17,6 +17,10 @@ void initTokeniser(const char* source) {
     tokeniser.current = source;
 }
 
+void restoreTokeniser(const char* current) {
+    tokeniser.current = current;
+}
+
 static Token makeToken(TokenType type) {
     Token token;
     token.type = type;
@@ -222,7 +226,7 @@ Token getNextToken() {
 
     char currentChar = advance();
 
-    if (isAlphaOrSpecialChar(currentChar) | isDigit(currentChar)) {
+    if (isAlphaOrSpecialChar(currentChar) || isDigit(currentChar)) {
         return getLiteralToken(currentChar);
     }
 
@@ -235,5 +239,21 @@ Token getNextToken() {
             return makeToken(TOKEN_TAB);
         case '\n':
             return makeToken(TOKEN_NEWLINE);
+        case '<':
+            return makeToken(TOKEN_LESS_THAN);
+        case '>':
+            return makeToken(TOKEN_GREATER_THAN);
+        case '`':
+            return makeToken(TOKEN_GRAVE_ACCENT);
+        case '[':
+            return makeToken(TOKEN_OPEN_SQUARE_BRACKET);
+        case ']':
+            return makeToken(TOKEN_CLOSE_SQUARE_BRACKET);
+        case '(':
+            return makeToken(TOKEN_OPEN_PARENTHESIS);
+        case ')':
+            return makeToken(TOKEN_CLOSE_PARENTHESIS);
+        case '.':
+            return makeToken(TOKEN_PERIOD);
     }
 }

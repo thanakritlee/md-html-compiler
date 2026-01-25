@@ -7,6 +7,10 @@ typedef enum {
     TOKEN_NEWLINE,
     TOKEN_EOF,
     TOKEN_STRING, TOKEN_NUMBER,
+    TOKEN_LESS_THAN, TOKEN_GREATER_THAN, TOKEN_GRAVE_ACCENT,
+    TOKEN_OPEN_SQUARE_BRACKET, TOKEN_CLOSE_SQUARE_BRACKET,
+    TOKEN_OPEN_PARENTHESIS, TOKEN_CLOSE_PARENTHESIS,
+    TOKEN_PERIOD,
 } TokenType;
 
 typedef struct {
@@ -16,6 +20,11 @@ typedef struct {
 } Token;
 
 void initTokeniser(const char* source);
+/**
+ * Restore the Tokeniser to an earlier state by
+ * resetting the current character memory pointer.
+ */
+void restoreTokeniser(const char* current);
 Token getNextToken();
 
 #endif
