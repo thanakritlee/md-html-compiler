@@ -28,14 +28,14 @@ Grammar in prioritised order
 ---
 
 document            ->  section*
-section             ->  header
+section             ->  heading
                         | paragraph
                         | table
                         | bullet-list
                         | number-list
                         | code
                         | image
-header              ->  ("#")+ (SPACE | TAB)+ content
+heading              ->  ("#")+ (SPACE | TAB)+ content
 bullet-list         ->  "-" (SPACE | TAB)+ content
 number-list         ->  NUMBER "." (SPACE | TAB)+ content
 paragraph           ->  content

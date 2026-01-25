@@ -80,6 +80,18 @@ void heading_default() {
     assertWithMsg(token.type == TOKEN_H6, "Expect TOKEN_H6");
 }
 
+void heading_concat_string() {
+    printf("\theading concat string\n");
+
+    char* source = "#Title\0";
+    initTokeniser(source);
+
+    Token token = getNextToken();
+    assertWithMsg(token.type == TOKEN_H1, "Expect TOKEN_H1");
+    token = getNextToken();
+    assertWithMsg(token.type == TOKEN_STRING, "Expect TOKEN_STRING");
+}
+
 void runHeadingTests() {
     heading_1();
     heading_2();
@@ -88,4 +100,5 @@ void runHeadingTests() {
     heading_5();
     heading_6();
     heading_default();
+    heading_concat_string();
 }

@@ -30,7 +30,7 @@ I think in conclusion I want to go with the second approach because the output H
 # What are the components of this compiler?
 
 - Tokeniser
-- Compiler
+- Parser
 - File reader/writer
 - Main program
 
@@ -48,8 +48,8 @@ Should be able to use the C test runner on this component.
 Tokenisation on demand. Go through the input file buffer, create and return tokens.
 Should be able to use the C test runner on this component.
 
-## Compiler
-The main logic. Compose of both the parser and the code generator. Use the tokeniser to get read the tokens and parse the input buffer. While parsing, it generate and write the output HTML code into the output buffer.
+## Parser
+The main logic. Compose of both the parser and the code generator. Use the tokeniser to get the tokens and parse the input buffer. While parsing, it generate and write the output HTML code into the output buffer.
 Should be able to use the C test runner on this component.
 
 # Syntax Directed Translation
@@ -125,3 +125,51 @@ To be honest, this part is pretty challenging for me. I found myself reworking a
 
 ### References
 - https://www.w3schools.com/html/html_entities.asp
+
+# How does a C fprintf function knows when to stop writing out a char* buffer?
+So I did a quick spike to understand this, as well as go back and read the C file IO section of the x64 Assembly book. The C stdlib knows where a string ends by using the null terminator `\0`.
+
+This is shown in the Assembly book, where the author put a literal 0 binary value at the end of a base string that goes to the C stdlib fprintf function.
+
+My spike also shows that by putting a null terminator at the end of a string (even though it's not at the end of the allocated char array) will stop the C stdlib from writing out any further bytes after that point.
+
+I guess I can create an interface ontop of the char array to make working with it easier such as write string to buffer, expanding the buffer etc.
+
+# Peeking tokens?
+What thinking about how a heading rule can goes 2 ways, it's either a heading or a paragraph. If given that the TOKEN_H? follows by a space or tab, then it's a heading rule, but if it's followed by anything else such as a alphabet, number, or some special character then it's considered a content rule which is part of the paragraph rule.
+
+This whole thing is a bit confusing and made me think of adding a peek function to the tokeniser so that the parser could peek at the next token.
+
+Not sure yet if it's needed or not. I guess we'll see.
+I do feel like the codebase is starting to get a bit messy though. I need to do a refactor in my next commit.
+
+# Confusiong with char pointer and just char
+It seems that I *char and char[] is a different beast. I tried to assign a char[] to *char in the buffer, thinking that it would work, but it didn't. I ended up searching for a method online, and the solution is to use malloc instead of the manual char[] creation. Fair enough.
+
+Now I'll also need to deallocate the memory upone exits as well.
+
+----------------------
+
+Also, saving this code snippet to use later for writing the buffer out to a file. fprintf knows when to stop writing from the buffer by looking at the null terminator.
+
+```
+FILE *fptr;
+    // Open a file in writing mode
+    fptr = fopen("filename.html", "w");
+
+    // Write some text to the file    
+    fprintf(fptr, "%s", outputBuffer.mem);
+
+    // Close the file
+    fclose(fptr); 
+```
+
+Pretty good read:
+- https://www.geeksforgeeks.org/c/dynamic-memory-allocation-in-c-using-malloc-calloc-free-and-realloc/
+
+# code vs pre tag for displaying code snippet
+So it seems that when using the pre tag, it automatically put in a new line before staring the code snippet. I guess this is fine for code section in the document, but it's not what I want for displaying inline code.
+
+With inline code, the code shouldn't be on a new line, it should be inline haha. So using the code tag seems to be best for this.
+
+Also, another interesting thing, when inserting a tab into the code tag it only output 1 space character, while in the pre tag it output 2 space characters. I don't know why that is, but it's just an interesting fact.
