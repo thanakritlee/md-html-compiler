@@ -47,6 +47,21 @@ void writeReservedHTMLCharacter(Token token) {
 }
 
 /**
+ * Write the token to the buffer.
+ * If the token is a reserved HTML character, then 
+ * convert it to HTML code first then write it to
+ * the buffer.
+ * Otherwise, just write the token to the buffer.
+ */
+void writeTokenToBuffer(Token token) {
+    if (isReservedHTMLCharacter(token)) {
+        writeReservedHTMLCharacter(parser.currentToken);
+    } else {
+        writeToBuffer(token.start, token.length);
+    }
+}
+
+/**
  * Restore both the parser and tokeniser to an earlier state.
  * 
  * The predictive parser does multiple lookahead of tokens to determine
@@ -113,12 +128,7 @@ void inlineCodeRule() {
 
     advance();
     while (parser.currentToken.type != TOKEN_GRAVE_ACCENT) {
-        if (isReservedHTMLCharacter(parser.currentToken)) {
-            writeReservedHTMLCharacter(parser.currentToken);
-            advance();
-            continue;
-        }
-        writeToBuffer(parser.currentToken.start, parser.currentToken.length);
+        writeTokenToBuffer(parser.currentToken);
         advance();
     }
 
@@ -234,12 +244,7 @@ void linkRule() {
     while (parser.currentToken.type != TOKEN_CLOSE_SQUARE_BRACKET)
     {
         // Write link description to buffer.
-        if (isReservedHTMLCharacter(parser.currentToken)) {
-            writeReservedHTMLCharacter(parser.currentToken);
-            advance();
-            continue;
-        }
-        writeToBuffer(parser.currentToken.start, parser.currentToken.length);
+        writeTokenToBuffer(parser.currentToken);
         advance();
     }
 
@@ -255,12 +260,6 @@ void contentRule() {
         parser.currentToken.type != TOKEN_EOF) {
             // TODO: Handle reserved special characters.
 
-            if (isReservedHTMLCharacter(parser.currentToken)) {
-                writeReservedHTMLCharacter(parser.currentToken);
-                advance();
-                continue;
-            }
-
             if (parser.currentToken.type == TOKEN_GRAVE_ACCENT &&
                 isInlineCodeRule()) {
                     inlineCodeRule();
@@ -275,7 +274,7 @@ void contentRule() {
                     continue;
             }
 
-            writeToBuffer(parser.currentToken.start, parser.currentToken.length);
+            writeTokenToBuffer(parser.currentToken);
             advance();
         }
 
