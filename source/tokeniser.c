@@ -255,5 +255,9 @@ Token getNextToken() {
             return makeToken(TOKEN_CLOSE_PARENTHESIS);
         case '.':
             return makeToken(TOKEN_PERIOD);
+        case '!':
+            return makeToken(TOKEN_EXCLAMATION_MARK);
+        case '-':
+            return makeToken(TOKEN_MINUS);
     }
 }

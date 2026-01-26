@@ -1,3 +1,4 @@
+
 #include <stdio.h>
 #include <string.h>
 
@@ -6,17 +7,10 @@
 #include "../../source/parser.h"
 #include "../common.h"
 
-void combination1() {
-    printf("\tcombination 1\n");
+void image1() {
+    printf("\timage 1\n");
 
-    char* source = 
-    "# Some Title\n\n"
-    "## Subject 1\n"
-    "This is the first paragraph.\n\n"
-    "## Subject 2\n"
-    "This is the second paragraph.\n\n"
-    "## Subject 3\n"
-    "This is the third paragraph.\0";
+    char* source = "![Image of a tree](/assets/image/tree.png)\n\0";
     initTokeniser(source);
     initBuffer();
 
@@ -26,19 +20,7 @@ void combination1() {
     char expectedBuffer[] = 
     "<!DOCTYPE html>\n"
     "<html>\n"
-    "<h1>Some Title</h1>\n"
-    "<h2>Subject 1</h2>\n"
-    "<p>\n"
-    "This is the first paragraph.\n"
-    "</p>\n"
-    "<h2>Subject 2</h2>\n"
-    "<p>\n"
-    "This is the second paragraph.\n"
-    "</p>\n"
-    "<h2>Subject 3</h2>\n"
-    "<p>\n"
-    "This is the third paragraph.\n"
-    "</p>\n"
+    "<img src=\"/assets/image/tree.png\" alt=\"Image of a tree\">\n"
     "</html>\0";
     
     assertWithMsg(buffer.length == strlen(expectedBuffer), 
@@ -51,14 +33,10 @@ void combination1() {
     destroyBuffer();
 }
 
-void combination2() {
-    printf("\tcombination 2\n");
+void imageNoAltText() {
+    printf("\timage no alt text\n");
 
-    char* source = 
-    "# Some Title\n\n"
-    "## Subject 1\n"
-    "This is the first paragraph.\n\n"
-    "![Binary Tree](/image/binary-tree.png)\0";
+    char* source = "![](/assets/image/tree.png)\0";
     initTokeniser(source);
     initBuffer();
 
@@ -68,14 +46,9 @@ void combination2() {
     char expectedBuffer[] = 
     "<!DOCTYPE html>\n"
     "<html>\n"
-    "<h1>Some Title</h1>\n"
-    "<h2>Subject 1</h2>\n"
-    "<p>\n"
-    "This is the first paragraph.\n"
-    "</p>\n"
-    "<img src=\"/image/binary-tree.png\" alt=\"Binary Tree\">\n"
+    "<img src=\"/assets/image/tree.png\" alt=\"\">\n"
     "</html>\0";
-
+    
     assertWithMsg(buffer.length == strlen(expectedBuffer), 
     "Unexpected buffer length");
     assertWithMsg(
@@ -86,7 +59,7 @@ void combination2() {
     destroyBuffer();
 }
 
-void runParserCombinationTests() {
-    combination1();
-    combination2();
+void runParserImageTests() {
+    image1();
+    imageNoAltText();
 }

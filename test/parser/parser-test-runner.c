@@ -3,6 +3,7 @@
 #include "./heading.h"
 #include "./paragraph.h"
 #include "./combination.h"
+#include "./image.h"
 
 void runParserTests() {
     printf("=================================\n");
@@ -12,6 +13,7 @@ void runParserTests() {
     runParserHeadingTests();
     runParserParagraphTests();
     runParserCombinationTests();
+    runParserImageTests();
 
     printf("\n");
 }

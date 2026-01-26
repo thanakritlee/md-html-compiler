@@ -106,6 +106,32 @@ void period() {
     assertWithMsg(memcmp(token.start, ".", 1) == 0, "Expect token: '.'");
 }
 
+void exclamationMark() {
+    printf("\texclamation mark token '!'\n");
+
+    char* source = "!\0";
+    initTokeniser(source);
+
+    Token token = getNextToken();
+    
+    assertWithMsg(token.type == TOKEN_EXCLAMATION_MARK, "Expect TOKEN_EXCLAMATION_MARK");
+    assertWithMsg(token.length == 1, "Expect token length of 1");
+    assertWithMsg(memcmp(token.start, "!", 1) == 0, "Expect token: '!'");
+}
+
+void minus() {
+    printf("\tmius token '-'\n");
+
+    char* source = "-\0";
+    initTokeniser(source);
+
+    Token token = getNextToken();
+    
+    assertWithMsg(token.type == TOKEN_MINUS, "Expect TOKEN_MINUS");
+    assertWithMsg(token.length == 1, "Expect token length of 1");
+    assertWithMsg(memcmp(token.start, "-", 1) == 0, "Expect token: '-'");
+}
+
 void runSpecialCharacterTests() {
     lessThanToken();
     greaterThanToken();
@@ -115,4 +141,6 @@ void runSpecialCharacterTests() {
     openParenthesis();
     closeParenthesis();
     period();
+    exclamationMark();
+    minus();
 }

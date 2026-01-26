@@ -152,13 +152,14 @@ bool isLinkRule() {
     Token originalCurrToken = parser.currentToken;
 
     advance();
-    while (parser.currentToken.type != TOKEN_CLOSE_SQUARE_BRACKET &&
+    while (
+        parser.currentToken.type != TOKEN_CLOSE_SQUARE_BRACKET &&
         parser.currentToken.type != TOKEN_NEWLINE &&
         parser.currentToken.type != TOKEN_EOF)
-        {
-            // Skip through the link description section.
-            advance();
-        }
+    {
+        // Skip through the link description section.
+        advance();
+    }
     // If a closing square bracket hasn't been found, then
     // it's not a link rule.
     if (parser.currentToken.type != TOKEN_CLOSE_SQUARE_BRACKET) {
@@ -172,26 +173,25 @@ bool isLinkRule() {
         restoreParserAndTokeniser(originalPrevToken, originalCurrToken);
         return false;
     }
-    while (parser.currentToken.type != TOKEN_CLOSE_PARENTHESIS &&
-        // Skip through the link URL section.
+    advance();
+    while (
+        parser.currentToken.type != TOKEN_CLOSE_PARENTHESIS &&
         parser.currentToken.type != TOKEN_NEWLINE &&
         parser.currentToken.type != TOKEN_EOF)
-        {
-            advance();
-        }
-
-    Token currToken = parser.currentToken;
-
-    restoreParserAndTokeniser(originalPrevToken, originalCurrToken);
-
-    if (currToken.type == TOKEN_CLOSE_PARENTHESIS) {
-        // Has a closing TOKEN_CLOSE_PARENTHESIS.
+    {
+        // Skip through the link URL section.
+        advance();
+    }
+    
+    if (parser.currentToken.type == TOKEN_CLOSE_PARENTHESIS) {
+        // Has a closing parenthesis.
         // Therefore, a link rule is valid.
+        restoreParserAndTokeniser(originalPrevToken, originalCurrToken);
         return true;
     }
+    restoreParserAndTokeniser(originalPrevToken, originalCurrToken);
     return false;
 }
-
 
 /**
  * Produce a HTML anchor hyperlink:
@@ -207,7 +207,7 @@ void linkRule() {
     /**
      * Initial state:
      * - currentToken is the opening TOKEN_OPEN_SQUARE_BRACKET.
-     * Ending state:
+     * End state:
      * - currentToken is the closing TOKEN_CLOSE_PARENTHESIS.
      */
 
@@ -218,17 +218,16 @@ void linkRule() {
     writeToBuffer("<a href=\"", 9);
 
     // Skip through the link description section.
-    while (parser.currentToken.type != TOKEN_CLOSE_SQUARE_BRACKET)
-    {
+    while (parser.currentToken.type != TOKEN_CLOSE_SQUARE_BRACKET) {
         advance();
     }
-    // 2 advances() to skip through the open parenthesis token.
+    // 2 advance() to skip through the close square bracket and
+    // open parenthesis token.
     advance();
     advance();
-    while (parser.currentToken.type != TOKEN_CLOSE_PARENTHESIS)
-    {        
+    while (parser.currentToken.type != TOKEN_CLOSE_PARENTHESIS) {        
         // Write link URL to buffer.
-        writeToBuffer(parser.currentToken.start, parser.currentToken.length);        
+        writeTokenToBuffer(parser.currentToken);
         advance();
     }
 
@@ -241,8 +240,7 @@ void linkRule() {
     // description section.
     restoreParserAndTokeniser(descriptionPrevToken, descriptionCurrToken);
 
-    while (parser.currentToken.type != TOKEN_CLOSE_SQUARE_BRACKET)
-    {
+    while (parser.currentToken.type != TOKEN_CLOSE_SQUARE_BRACKET) {
         // Write link description to buffer.
         writeTokenToBuffer(parser.currentToken);
         advance();
@@ -386,13 +384,151 @@ void paragraphRule() {
     writeToBuffer("</p>\n", 5);
 }
 
+/**
+ * Do multiple tokens lookahead to determine whether it is
+ * an image rule or not.
+ * image rule format: ![...](...)
+ */
+bool isImageRule() {
+    Token originalPrevToken = parser.previousToken;
+    Token originalCurrToken = parser.currentToken;
+
+    if (parser.currentToken.type != TOKEN_EXCLAMATION_MARK) {
+        return false;
+    }
+    advance();
+    if (parser.currentToken.type != TOKEN_OPEN_SQUARE_BRACKET) {
+        restoreParserAndTokeniser(originalPrevToken, originalCurrToken);
+        return false;
+    }
+
+    advance();
+    while (
+        parser.currentToken.type != TOKEN_CLOSE_SQUARE_BRACKET &&
+        parser.currentToken.type != TOKEN_NEWLINE &&
+        parser.currentToken.type != TOKEN_EOF
+    ) {
+        // Skip through image alt text section.
+        advance();
+    }
+    // If a closing square bracket hasn't been found, then
+    // it's not an image rule.
+    if (parser.currentToken.type != TOKEN_CLOSE_SQUARE_BRACKET) {
+        restoreParserAndTokeniser(originalPrevToken, originalCurrToken);
+        return false;
+    }
+    advance();
+    // If a opening parenthesis hasn't been found, then
+    // it's not an image rule.
+    if (parser.currentToken.type != TOKEN_OPEN_PARENTHESIS) {
+        restoreParserAndTokeniser(originalPrevToken, originalCurrToken);
+        return false;
+    }
+    advance();
+    while (
+        parser.currentToken.type != TOKEN_CLOSE_PARENTHESIS &&
+        parser.currentToken.type != TOKEN_NEWLINE &&
+        parser.currentToken.type != TOKEN_EOF
+    ) {
+        // Skip through the image link section.
+        advance();
+    }
+    // If a closing parenthesis hasn't been found, then it's
+    // not an image rule.
+    if (parser.currentToken.type != TOKEN_CLOSE_PARENTHESIS) {
+        restoreParserAndTokeniser(originalPrevToken, originalCurrToken);
+        return false;
+    }
+    advance();
+    if (
+        parser.currentToken.type == TOKEN_NEWLINE ||
+        parser.currentToken.type == TOKEN_EOF
+    ) {
+        // In the image rule, the closing parenthesis must be
+        // followed by a newline or a EOF token.
+        restoreParserAndTokeniser(originalPrevToken, originalCurrToken);
+        return true;
+    }
+    restoreParserAndTokeniser(originalPrevToken, originalCurrToken);
+    return false;
+}
+
+/**
+ * Produce a HTML img:
+ * <img src=" ... " alt=" ... ">
+ * 
+ * Similar to link rule, the image link and the image alt text are
+ * in inversed position of each other in Markdown and HTML.
+ * This function skip through the Markdown image alt text, grab the
+ * image link and write it to the buffer, then circle back to the
+ * alt text to write it to the buffer.
+ */
+void imageRule() {
+    /**
+     * Initial state:
+     * - currentToken is TOKEN_EXCLAMATION_MARK.
+     * End state:
+     * - currentToken is the closing TOKEN_CLOSE_PARENTHESIS.
+     */
+
+    // 2 advance() to skip through the exclamation mark and open
+    // square bracket.
+    advance();
+    advance();
+    Token altTextPrevToken = parser.previousToken;
+    Token altTextCurrToken = parser.currentToken;
+
+    writeToBuffer("<img src=\"", 10);
+
+    while (parser.currentToken.type != TOKEN_CLOSE_SQUARE_BRACKET) {
+        advance();
+    }
+    // 2 advance() to skip through the close square bracket and
+    // open parenthesis token.
+    advance();
+    advance();
+    while (parser.currentToken.type != TOKEN_CLOSE_PARENTHESIS) {
+        // Write image link to buffer.
+        writeTokenToBuffer(parser.currentToken);
+        advance();
+    }
+
+    writeToBuffer("\" alt=\"", 7);
+
+    Token closingParenPrevToken = parser.previousToken;
+    Token closingParenCurrToken = parser.currentToken;
+
+    // Reset both tokeniser and parser back to the image
+    // alt text section.
+    restoreParserAndTokeniser(altTextPrevToken, altTextCurrToken);
+
+    while (parser.currentToken.type != TOKEN_CLOSE_SQUARE_BRACKET) {
+        // Write image alt text to buffer.
+        writeTokenToBuffer(parser.currentToken);
+        advance();
+    }
+
+    writeToBuffer("\">\n", 3);
+
+    // Set both tokeniser and parser to the state at the end
+    // of the image rule, which is the closing parenthesis token.
+    restoreParserAndTokeniser(closingParenPrevToken, closingParenCurrToken);
+    
+    // Skip through all left over newlines after content, if any.
+    advance();
+    while (parser.currentToken.type == TOKEN_NEWLINE) {        
+        advance();
+    }
+}
+
 void sectionRule() {
     // TODO: if bullet list rule
     // TODO: if number list rule
     // TODO: if code rule
-    // TODO: if image rule
     if (isHeadingRule()) {
         headingRule();
+    } else if (isImageRule()) {
+        imageRule();
     } else {
         // A catch-all rule, when all other rules
         // are invalid.
