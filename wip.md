@@ -143,6 +143,10 @@ This whole thing is a bit confusing and made me think of adding a peek function 
 Not sure yet if it's needed or not. I guess we'll see.
 I do feel like the codebase is starting to get a bit messy though. I need to do a refactor in my next commit.
 
+----------------------
+
+So I did ended up doing a sort of multiple lookahead algorithm. The parser I'm implemented is a predictive parser after all. Right now it's doing a multiple lookahead to determine whether it's an inline code, link, or just normal content. This is because given the opening token of some sort (square bracket, grave accent), there might not be a closing tag. In the scenario that there's no closing tag, then the opening tag should be treated as a string to be displayed in the content rule.
+
 # Confusiong with char pointer and just char
 It seems that I *char and char[] is a different beast. I tried to assign a char[] to *char in the buffer, thinking that it would work, but it didn't. I ended up searching for a method online, and the solution is to use malloc instead of the manual char[] creation. Fair enough.
 
@@ -173,3 +177,6 @@ So it seems that when using the pre tag, it automatically put in a new line befo
 With inline code, the code shouldn't be on a new line, it should be inline haha. So using the code tag seems to be best for this.
 
 Also, another interesting thing, when inserting a tab into the code tag it only output 1 space character, while in the pre tag it output 2 space characters. I don't know why that is, but it's just an interesting fact.
+
+# string vs number
+Looking back, I think I should have implemented the number token differently. Any string of digits should have been considered a number, no matter if it's concatenated with a string or a special character. In the end, the parser will decide how to interpret the tokens anyway. Perhaps I could fix this after the compiler has been implemented. Could be a good exercise of refactoring the code base and TDD.

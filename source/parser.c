@@ -285,17 +285,53 @@ void contentRule() {
 }
 
 /**
+ * A valid hearding rule is a heading token followed by
+ * 1 or more spaces/tabs, then the content.
+ */
+bool isHeadingRule() {    
+    if (
+        !(
+            parser.currentToken.type == TOKEN_H1 ||
+            parser.currentToken.type == TOKEN_H2 ||
+            parser.currentToken.type == TOKEN_H3 ||
+            parser.currentToken.type == TOKEN_H4 ||
+            parser.currentToken.type == TOKEN_H5 ||
+            parser.currentToken.type == TOKEN_H6
+        )) {
+            // If the first token of the line isn't a 
+            // heading token, then it's a not a valid
+            // heading rule.
+            return false;
+        }
+
+    Token originalPrevToken = parser.previousToken;
+    Token originalCurrToken = parser.currentToken;
+
+    advance();
+    Token currToken = parser.currentToken;
+    
+    restoreParserAndTokeniser(originalPrevToken, originalCurrToken);
+
+    // If a space or tab follows the heading token, then a
+    // heading rule is valid.
+    if (currToken.type == TOKEN_SPACE || 
+        currToken.type == TOKEN_TAB) {
+            return true;
+        }
+    return false;
+}
+
+/**
  * Produce a HTML heading:
  * <h1> ... </h1>
  */
 void headingRule() {
     /**
      * Initial state:
-     * - previousToken is a heading token.
-     * - currentToken is a space or tab token.
+     * - currentToken is a heading token.
      */
 
-    TokenType headingType = parser.previousToken.type;
+    TokenType headingType = parser.currentToken.type;
     char headingNumber = '1';
     switch (headingType)
     {
@@ -324,7 +360,8 @@ void headingRule() {
     closeHeadingStr[3] = headingNumber;
 
     writeToBuffer(openHeadingStr, 4);
-
+    
+    advance();
     // Skip through all whitespace between '#' and content.
     while (parser.currentToken.type == TOKEN_SPACE ||
         parser.currentToken.type == TOKEN_TAB) {
@@ -344,33 +381,22 @@ void headingRule() {
  */
 void paragraphRule() {
     writeToBuffer("<p>\n", 4);
-
-    // TODO: Add paragraph rule.
-    // ...
-
+    contentRule();
+    writeToBuffer("\n", 1);
     writeToBuffer("</p>\n", 5);
 }
 
 void sectionRule() {
-    if (
-        parser.currentToken.type == TOKEN_H1 ||
-        parser.currentToken.type == TOKEN_H2 ||
-        parser.currentToken.type == TOKEN_H3 ||
-        parser.currentToken.type == TOKEN_H4 ||
-        parser.currentToken.type == TOKEN_H5 ||
-        parser.currentToken.type == TOKEN_H6
-    ) {
-        advance();
-        // Determine whether to follow the heading or paragraph
-        // production rule.
-        if (parser.currentToken.type == TOKEN_SPACE || 
-            parser.currentToken.type == TOKEN_TAB) {
-                // Follow the heading rule.
-                headingRule();
-            } else {
-                // Follow the paragraph rule.
-                paragraphRule();
-            }
+    // TODO: if bullet list rule
+    // TODO: if number list rule
+    // TODO: if code rule
+    // TODO: if image rule
+    if (isHeadingRule()) {
+        headingRule();
+    } else {
+        // A catch-all rule, when all other rules
+        // are invalid.
+        paragraphRule();
     }
 }
 

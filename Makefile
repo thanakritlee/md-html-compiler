@@ -9,6 +9,8 @@ testrunner: test/testrunner.c test/common.o \
 			test/tokeniser/special-character.o \
 			test/parser/parser-test-runner.o \
 			test/parser/heading.o \
+			test/parser/paragraph.o \
+			test/parser/combination.o \
 			source/parser.o \
 			source/buffer.o \
 			test/buffer/buffer-test-runner.o \
@@ -19,7 +21,9 @@ testrunner: test/testrunner.c test/common.o \
 	test/tokeniser/newline-and-eof.o test/tokeniser/string.o \
 	test/tokeniser/number.o test/tokeniser/special-character.o \
 	test/parser/parser-test-runner.o \
-	test/parser/heading.o source/parser.o source/buffer.o \
+	test/parser/heading.o test/parser/paragraph.o \
+	test/parser/combination.o \
+	source/parser.o source/buffer.o \
 	test/buffer/buffer-test-runner.o test/buffer/buffer.o
 
 test/tokeniser/tokeniser-test-runner.o: test/tokeniser/tokeniser-test-runner.c test/tokeniser/tokeniser-test-runner.h
@@ -54,6 +58,12 @@ test/tokeniser/special-character.o: test/tokeniser/special-character.c test/toke
 
 test/parser/heading.o: test/parser/heading.c test/parser/heading.h
 	gcc -c test/parser/heading.c -o test/parser/heading.o
+
+test/parser/paragraph.o: test/parser/paragraph.c test/parser/paragraph.h
+	gcc -c test/parser/paragraph.c -o test/parser/paragraph.o
+
+test/parser/combination.o: test/parser/combination.c test/parser/combination.h
+	gcc -c test/parser/combination.c -o test/parser/combination.o
 
 test/buffer/buffer.o: test/buffer/buffer.c test/buffer/buffer.h
 	gcc -c test/buffer/buffer.c -o test/buffer/buffer.o

@@ -1,6 +1,8 @@
 #include <stdio.h>
 
 #include "./heading.h"
+#include "./paragraph.h"
+#include "./combination.h"
 
 void runParserTests() {
     printf("=================================\n");
@@ -8,6 +10,8 @@ void runParserTests() {
     printf("=================================\n\n");
 
     runParserHeadingTests();
+    runParserParagraphTests();
+    runParserCombinationTests();
 
     printf("\n");
 }
