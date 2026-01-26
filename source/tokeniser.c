@@ -259,5 +259,7 @@ Token getNextToken() {
             return makeToken(TOKEN_EXCLAMATION_MARK);
         case '-':
             return makeToken(TOKEN_MINUS);
+        case '*':
+            return makeToken(TOKEN_ASTERISK);
     }
 }

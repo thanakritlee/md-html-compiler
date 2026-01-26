@@ -86,7 +86,45 @@ void combination2() {
     destroyBuffer();
 }
 
+void combinationSpecialCharacters() {
+    printf("\tcombination special characters\n");
+
+    char* source = 
+    "# Some Brackets: ( { [ ] } )\n"
+    "## Some Dots: , . !\n"
+    "Some reserved HTML characters: < >\n\n"
+    "Some more special characters? + - * / # $ @ &\n\0";
+    initTokeniser(source);
+    initBuffer();
+
+    parse();
+
+    Buffer buffer = getBuffer();
+    char expectedBuffer[] = 
+    "<!DOCTYPE html>\n"
+    "<html>\n"
+    "<h1>Some Brackets: ( { [ ] } )</h1>\n"
+    "<h2>Some Dots: , . !</h2>\n"
+    "<p>\n"
+    "Some reserved HTML characters: &lt &gt\n"
+    "</p>\n"
+    "<p>\n"
+    "Some more special characters? + - * / # $ @ &\n"
+    "</p>\n"
+    "</html>\0";
+    
+    assertWithMsg(buffer.length == strlen(expectedBuffer), 
+    "Unexpected buffer length");
+    assertWithMsg(
+        memcmp(buffer.mem, expectedBuffer, 
+            strlen(expectedBuffer)) == 0, 
+        "Unexpected buffer content");
+
+    destroyBuffer();
+}
+
 void runParserCombinationTests() {
     combination1();
     combination2();
+    combinationSpecialCharacters();
 }

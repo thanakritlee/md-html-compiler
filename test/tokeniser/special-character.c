@@ -132,6 +132,19 @@ void minus() {
     assertWithMsg(memcmp(token.start, "-", 1) == 0, "Expect token: '-'");
 }
 
+void asterisk() {
+    printf("\tasterisk token '*'\n");
+
+    char* source = "*\0";
+    initTokeniser(source);
+
+    Token token = getNextToken();
+    
+    assertWithMsg(token.type == TOKEN_ASTERISK, "Expect TOKEN_ASTERISK");
+    assertWithMsg(token.length == 1, "Expect token length of 1");
+    assertWithMsg(memcmp(token.start, "*", 1) == 0, "Expect token: '*'");
+}
+
 void runSpecialCharacterTests() {
     lessThanToken();
     greaterThanToken();
@@ -143,4 +156,5 @@ void runSpecialCharacterTests() {
     period();
     exclamationMark();
     minus();
+    asterisk();
 }
