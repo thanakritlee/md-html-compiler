@@ -123,8 +123,70 @@ void combinationSpecialCharacters() {
     destroyBuffer();
 }
 
+void combinationAll() {
+    printf("\tcombination all\n");
+
+    char* source = 
+    "# Some Title\n\n"
+    "## Subject 1\n"
+    "This is the first paragraph.\n\n"
+    "![Binary Tree](/image/binary-tree.png)\n\n"
+    "## Some `mov` code example\n"
+    "This is some x64 assembly code:\n"
+    "```\n"
+    "call ClearBuffer\n"
+    "mov bl, [user_char_x_pos]\n"
+    "mov al, [user_char_y_pos]\n"
+    "mov cl, CHAR_AT\n"
+    "call ModifyBuffer\n"
+    "```\n"
+    "# Contact at [site](www.site.com)\n"
+    "For more detail, have a look at my site: [site](www.site.com)\0";
+    initTokeniser(source);
+    initBuffer();
+
+    parse();
+
+    Buffer buffer = getBuffer();
+    char expectedBuffer[] = 
+    "<!DOCTYPE html>\n"
+    "<html>\n"
+    "<h1>Some Title</h1>\n"
+    "<h2>Subject 1</h2>\n"
+    "<p>\n"
+    "This is the first paragraph.\n"
+    "</p>\n"
+    "<img src=\"/image/binary-tree.png\" alt=\"Binary Tree\">\n"
+    "<h2>Some <code>mov</code> code example</h2>\n"
+    "<p>\n"
+    "This is some x64 assembly code:\n"
+    "</p>\n"
+    "<pre>\n"
+    "call ClearBuffer\n"
+    "mov bl, [user_char_x_pos]\n"
+    "mov al, [user_char_y_pos]\n"
+    "mov cl, CHAR_AT\n"
+    "call ModifyBuffer\n"
+    "</pre>\n"
+    "<h1>Contact at <a href=\"www.site.com\">site</a></h1>\n"
+    "<p>\n"
+    "For more detail, have a look at my site: <a href=\"www.site.com\">site</a>\n"
+    "</p>\n"
+    "</html>\0";
+
+    assertWithMsg(buffer.length == strlen(expectedBuffer), 
+    "Unexpected buffer length");
+    assertWithMsg(
+        memcmp(buffer.mem, expectedBuffer, 
+            strlen(expectedBuffer)) == 0, 
+        "Unexpected buffer content");
+
+    destroyBuffer();
+}
+
 void runParserCombinationTests() {
     combination1();
     combination2();
     combinationSpecialCharacters();
+    combinationAll();
 }

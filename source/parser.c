@@ -468,7 +468,7 @@ void imageRule() {
      * Initial state:
      * - currentToken is TOKEN_EXCLAMATION_MARK.
      * End state:
-     * - currentToken is the closing TOKEN_CLOSE_PARENTHESIS.
+     * - currentToken is any token after TOKEN_NEWLINE.
      */
 
     // 2 advance() to skip through the exclamation mark and open
@@ -514,21 +514,126 @@ void imageRule() {
     // of the image rule, which is the closing parenthesis token.
     restoreParserAndTokeniser(closingParenPrevToken, closingParenCurrToken);
     
-    // Skip through all left over newlines after content, if any.
+    // Skip through all left over newlines after image, if any.
     advance();
     while (parser.currentToken.type == TOKEN_NEWLINE) {        
         advance();
     }
 }
 
+/**
+ * Lookahead at the next 3 tokens to see if they are grave accents.
+ */
+bool isThreeGraves() {
+    Token originalPrevToken = parser.previousToken;
+    Token originalCurrToken = parser.currentToken;
+
+    for (int i = 0; i < 3; i++) {
+        if (parser.currentToken.type != TOKEN_GRAVE_ACCENT) {
+            restoreParserAndTokeniser(originalPrevToken, originalCurrToken);
+            return false;
+        }
+        advance();
+    }
+    restoreParserAndTokeniser(originalPrevToken, originalCurrToken);
+    return true;
+}
+
+/**
+ * Do multiple lookaheads to determine if it's a code rule or not.
+ * code rule format: ```\n ... ```\n
+ */
+bool isCodeRule() {
+    Token originalPrevToken = parser.previousToken;
+    Token originalCurrToken = parser.currentToken;
+
+    if (!isThreeGraves()) {
+        return false;
+    }
+    // 3 advance() to skip through the 3 grave accents.
+    advance();
+    advance();
+    advance();
+
+    if (parser.currentToken.type != TOKEN_NEWLINE) {
+        // There must be a newline after the opening graves.
+        restoreParserAndTokeniser(originalPrevToken, originalCurrToken);
+        return false;
+    }
+    advance();
+
+    bool isEndingGraves = isThreeGraves();
+    while (
+        !isEndingGraves &&
+        parser.currentToken.type != TOKEN_EOF
+    ) {
+        advance();
+        isEndingGraves = isThreeGraves();
+    }
+
+    if (isEndingGraves) {
+        // 3 advance() to skip through the 3 grave accents.
+        advance();
+        advance();
+        advance();
+        if (
+            parser.currentToken.type == TOKEN_NEWLINE ||
+            parser.currentToken.type == TOKEN_EOF
+        ) {
+            restoreParserAndTokeniser(originalPrevToken, originalCurrToken);
+            return true;
+        }
+    }
+
+    // Otherwise, ending grave accents weren't found, or there wasn't
+    // a newline or EOF after the ending grave accents.
+    restoreParserAndTokeniser(originalPrevToken, originalCurrToken);
+    return false;
+}
+
+void codeRule() {
+    /**
+     * Initiate state:
+     * - currentToken is the first of the three starting grave accents.
+     * End state:
+     * - currentToken is any token after TOKEN_NEWLINE.
+     */
+    
+    // Skip through 3 graves and 1 newline.
+    advance();
+    advance();
+    advance();
+    advance();
+
+    writeToBuffer("<pre>\n", 6);
+
+    while (!isThreeGraves()) {
+        writeTokenToBuffer(parser.currentToken);
+        advance();
+    }
+
+    // Skip through 3 graves.
+    advance();
+    advance();
+    advance();
+
+    // Skip through all left over newlines after code, if any.
+    while (parser.currentToken.type == TOKEN_NEWLINE) {
+        advance();
+    }
+
+    writeToBuffer("</pre>\n", 7);
+}
+
 void sectionRule() {
     // TODO: if bullet list rule
     // TODO: if number list rule
-    // TODO: if code rule
     if (isHeadingRule()) {
         headingRule();
     } else if (isImageRule()) {
         imageRule();
+    } else if (isCodeRule()) {
+        codeRule();
     } else {
         // A catch-all rule, when all other rules
         // are invalid.

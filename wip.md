@@ -180,3 +180,13 @@ Also, another interesting thing, when inserting a tab into the code tag it only 
 
 # string vs number
 Looking back, I think I should have implemented the number token differently. Any string of digits should have been considered a number, no matter if it's concatenated with a string or a special character. In the end, the parser will decide how to interpret the tokens anyway. Perhaps I could fix this after the compiler has been implemented. Could be a good exercise of refactoring the code base and TDD.
+
+# Putting NEWLINE and EOF at the end of every rule
+I find that I've added NEWLINE and EOF to the end of every rule as a strict requirement. I think it's because I want to standadise the grammar some how. All the rules should behave the same right? Otherwise if each rules is a bit different from each other, then the rule's algorithm implement is a bit different from each other too. It brings a lot of incongruence to the surface.
+
+Sure, rules can be different, but I just feel that it makes more sense this way. Perhaps it's just a personal opinion.
+
+# Common bugs I've seen
+Segmentation error often occur when a lexeme hasn't been defined as a token. For example, in the image rule test case, I've use an image file that has a '-' hyphen/minus lexeme in it. At the time of writing and running the test case, I haven't defined that lexeme as a token yet, and it was categorised as a reserved special character (therefore not a string). This was the cause of the segmentation error.
+
+Memory data or byte length mismatch can easily be a result of typos between the source and the expected output data. So next time, before jumping into the rabbit hole, check for typos in the test case first.

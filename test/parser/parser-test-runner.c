@@ -4,6 +4,7 @@
 #include "./paragraph.h"
 #include "./combination.h"
 #include "./image.h"
+#include "./code.h"
 
 void runParserTests() {
     printf("=================================\n");
@@ -14,6 +15,7 @@ void runParserTests() {
     runParserParagraphTests();
     runParserCombinationTests();
     runParserImageTests();
+    runParserCodeTests();
 
     printf("\n");
 }

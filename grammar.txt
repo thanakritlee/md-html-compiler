@@ -41,7 +41,7 @@ number-list         ->  NUMBER "." (SPACE | TAB)+ content
 paragraph           ->  content
 content             ->  (STRING | NUMBER | SPACE | TAB | inline-code | link)+ (NEWLINE | EOF)
 inline-code         ->  "`" (STRING | NUMBER | SPACE | TAB)+ "`"
-code                ->  "```" (STRING | NUMBER | SPACE | TAB)+ NEWLINE "```"
+code                ->  "```" NEWLINE (STRING | NUMBER | SPACE | TAB | NEWLINE)+ "```" (NEWLINE | EOF)
 image               ->  "!" "[" (STRING | NUMBER | SPACE | TAB)+ "]" "(" STRING ")" (NEWLINE | EOF)
 link                ->  "[" (STRING | NUMBER | SPACE | TAB)+ "]" "(" STRING ")"
 
