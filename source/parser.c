@@ -256,8 +256,6 @@ void linkRule() {
 void contentRule() {
     while (parser.currentToken.type != TOKEN_NEWLINE &&
         parser.currentToken.type != TOKEN_EOF) {
-            // TODO: Handle reserved special characters.
-
             if (parser.currentToken.type == TOKEN_GRAVE_ACCENT &&
                 isInlineCodeRule()) {
                     inlineCodeRule();
@@ -272,6 +270,8 @@ void contentRule() {
                     continue;
             }
 
+            // If a content doesn't contain inline-code or link
+            // , then simply write the token to the buffer.
             writeTokenToBuffer(parser.currentToken);
             advance();
         }
@@ -625,15 +625,156 @@ void codeRule() {
     writeToBuffer("</pre>\n", 7);
 }
 
+/**
+ * A bullet pointer in a bullet list consist of the following tokens:
+ * MINUS (SPACE | TAB)+
+ */
+bool isBulletPointer() {
+    Token originalPrevToken = parser.previousToken;
+    Token originalCurrToken = parser.currentToken;
+
+    if (parser.currentToken.type != TOKEN_MINUS) {
+        return false;
+    }
+    
+    advance();
+    if (
+        parser.currentToken.type != TOKEN_SPACE && 
+        parser.currentToken.type != TOKEN_TAB
+    ) {
+        restoreParserAndTokeniser(originalPrevToken, originalCurrToken);
+        return false;
+    }
+
+    restoreParserAndTokeniser(originalPrevToken, originalCurrToken);
+    return true;  
+}
+
+/**
+ * Do lookahead to determine if it's a bullet list rule
+ * or not.
+ * A bullet list rule is a '-' followed by a space or tab
+ * , then the content.
+ */
+bool isBulletListRule() {
+    return isBulletPointer();
+}
+
+void bulletListRule() {
+    /**
+     * Initial state:
+     * - currentToken is the '-' token.
+     * End state:
+     * - currentToken is the first non-NEWLINE token 
+     *   after bullet list, or a EOF.
+     */
+
+    writeToBuffer("<ul>\n", 5);
+
+    while (isBulletPointer()) {
+        // Skip spaces and tabs between '-' and content.
+        advance();
+        while (
+            parser.currentToken.type == TOKEN_SPACE ||
+            parser.currentToken.type == TOKEN_TAB
+        ) {
+            advance();
+        }
+
+        // Write content of bullet point.
+        writeToBuffer("<li>", 4);
+        contentRule();
+        writeToBuffer("</li>\n", 6);    
+    }
+
+    writeToBuffer("</ul>\n", 6);
+}
+
+/**
+ * A number pointer in a number list consist of the following tokens:
+ * NUMBER PERIOD (SPACE | TAB)+
+ */
+bool isNumberPointer() {
+    Token originalPrevToken = parser.previousToken;
+    Token originalCurrToken = parser.currentToken;
+
+    if (parser.currentToken.type != TOKEN_NUMBER) {
+        return false;
+    }
+
+    advance();
+    if (parser.currentToken.type != TOKEN_PERIOD) {
+        restoreParserAndTokeniser(originalPrevToken, originalCurrToken);
+        return false;
+    }
+    
+    advance();
+    if (
+        parser.currentToken.type != TOKEN_SPACE && 
+        parser.currentToken.type != TOKEN_TAB
+    ) {
+        restoreParserAndTokeniser(originalPrevToken, originalCurrToken);
+        return false;
+    }
+
+    restoreParserAndTokeniser(originalPrevToken, originalCurrToken);
+    return true;    
+}
+
+/**
+ * Do lookahead to determine if it's a number list rule
+ * or not.
+ * A number list rule is a NUMBER PERIOD followed by a space or tab
+ * , then the content.
+ */
+bool isNumberListRule() {
+    return isNumberPointer();
+}
+
+void numberListRule() {
+    /**
+     * Initial state:
+     * - currentToken is a NUMBER token.
+     * End state:
+     * - currentToken is the first non-NEWLINE token 
+     *   after number list, or a EOF.
+     */
+
+    writeToBuffer("<ol type=\"1\">\n", 14);
+
+    while (isNumberPointer()) {
+        // 2 advance() to skip through the NUMBER and
+        // PERIOD token.
+        advance();
+        advance();
+        // Skip spaces and tabs between  and content.
+        while (
+            parser.currentToken.type == TOKEN_SPACE ||
+            parser.currentToken.type == TOKEN_TAB
+        ) {
+            advance();
+        }
+
+        // Write content of number point.
+        writeToBuffer("<li>", 4);
+        contentRule();
+        writeToBuffer("</li>\n", 6);    
+    }
+
+    writeToBuffer("</ol>\n", 6);
+}
+
 void sectionRule() {
-    // TODO: if bullet list rule
-    // TODO: if number list rule
     if (isHeadingRule()) {
         headingRule();
     } else if (isImageRule()) {
         imageRule();
     } else if (isCodeRule()) {
         codeRule();
+    } else if (isBulletListRule()) {
+        bulletListRule();
+    } else if (isNumberListRule()) {
+        numberListRule();
     } else {
         // A catch-all rule, when all other rules
         // are invalid.

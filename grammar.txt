@@ -36,8 +36,10 @@ section             ->  heading
                         | image
                         | paragraph
 heading              ->  ("#")+ (SPACE | TAB)+ content
-bullet-list         ->  "-" (SPACE | TAB)+ content
-number-list         ->  NUMBER "." (SPACE | TAB)+ content
+bullet-list         ->  bullet-point+
+bullet-point        -> "-" (SPACE | TAB)+ content
+number-list         ->  number-point+
+number-point        ->  NUMBER "." (SPACE | TAB)+ content
 paragraph           ->  content
 content             ->  (STRING | NUMBER | SPACE | TAB | inline-code | link)+ (NEWLINE | EOF)
 inline-code         ->  "`" (STRING | NUMBER | SPACE | TAB)+ "`"

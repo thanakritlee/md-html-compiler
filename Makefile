@@ -13,6 +13,7 @@ testrunner: test/testrunner.c test/common.o \
 			test/parser/combination.o \
 			test/parser/image.o \
 			test/parser/code.o \
+			test/parser/list.o \
 			source/parser.o \
 			source/buffer.o \
 			test/buffer/buffer-test-runner.o \
@@ -25,7 +26,7 @@ testrunner: test/testrunner.c test/common.o \
 	test/parser/parser-test-runner.o \
 	test/parser/heading.o test/parser/paragraph.o \
 	test/parser/combination.o test/parser/image.o \
-	test/parser/code.o \
+	test/parser/code.o test/parser/list.o \
 	source/parser.o source/buffer.o \
 	test/buffer/buffer-test-runner.o test/buffer/buffer.o
 
@@ -73,6 +74,9 @@ test/parser/image.o: test/parser/image.c test/parser/image.h
 
 test/parser/code.o: test/parser/code.c test/parser/code.h
 	gcc -c test/parser/code.c -o test/parser/code.o
+
+test/parser/list.o: test/parser/list.c test/parser/list.h
+	gcc -c test/parser/list.c -o test/parser/list.o
 
 test/buffer/buffer.o: test/buffer/buffer.c test/buffer/buffer.h
 	gcc -c test/buffer/buffer.c -o test/buffer/buffer.o
