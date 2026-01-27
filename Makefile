@@ -89,3 +89,17 @@ source/buffer.o: source/buffer.c source/buffer.h
 
 source/parser.o: source/parser.c source/parser.h
 	gcc -c source/parser.c -o source/parser.o
+
+source/fileio.o: source/fileio.c source/fileio.h
+	gcc -c source/fileio.c -o source/fileio.o
+
+compiler: source/main.c \
+		  source/fileio.o \
+		  source/buffer.o \
+		  source/tokeniser.o \
+		  source/parser.o
+	gcc source/main.c -o compiler \
+	source/fileio.o \
+	source/buffer.o \
+	source/tokeniser.o \
+	source/parser.o
