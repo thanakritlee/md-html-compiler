@@ -22,8 +22,8 @@ Buffer getBuffer() {
 }
 
 void expandBuffer() {
-    // Increase the buffer capacity by power of 2 each time it is expaned.
-    int newCapacity = buffer.capacity * 2;
+    // Increase the buffer capacity by multiplication of 2 each time it is expaned.
+    int newCapacity = buffer.capacity << 1;
     char* result = (char*)realloc(buffer.mem , newCapacity * sizeof(char));
     // If C is unable to allocate anymore memory space,
     // then free the buffer memory and exit the program.
