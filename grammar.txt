@@ -35,7 +35,7 @@ section             ->  heading
                         | code
                         | image
                         | paragraph
-heading              ->  ("#")+ (SPACE | TAB)+ content
+heading             ->  ("#")+ (SPACE | TAB)+ content
 bullet-list         ->  bullet-point+
 bullet-point        -> "-" (SPACE | TAB)+ content
 number-list         ->  number-point+
@@ -54,6 +54,7 @@ SPACE               -> " "
 TAB                 -> "\t"
 NEWLINE             -> "\n"
 EOF                 -> "\0"
+SPECIAL_CHARACTER   -> "!" | "[" | "]" | "(" | ")" | "*" | "<" | ">" | "." | "#" | "`" | "_" | "-" | ...
 
 reserved special characters
 - _     underscore
