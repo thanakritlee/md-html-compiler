@@ -73,7 +73,7 @@ void combination2() {
     "<p>\n"
     "This is the first paragraph.\n"
     "</p>\n"
-    "<img src=\"/image/binary-tree.png\" alt=\"Binary Tree\">\n"
+    "<img alt=\"Binary Tree\" src=\"/image/binary-tree.png\">\n"
     "</html>\0";
 
     assertWithMsg(buffer.length == strlen(expectedBuffer), 
@@ -163,7 +163,7 @@ void combinationAll() {
     "<p>\n"
     "This is the first paragraph.\n"
     "</p>\n"
-    "<img src=\"/image/binary-tree.png\" alt=\"Binary Tree\">\n"
+    "<img alt=\"Binary Tree\" src=\"/image/binary-tree.png\">\n"
     "<h2>Some <code>mov</code> code example</h2>\n"
     "<p>\n"
     "This is some x64 assembly code:\n"
