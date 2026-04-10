@@ -455,13 +455,8 @@ bool isImageRule() {
 
 /**
  * Produce a HTML img:
- * <img src=" ... " alt=" ... ">
+ * <img alt=" ... " src=" ... ">
  * 
- * Similar to link rule, the image link and the image alt text are
- * in inversed position of each other in Markdown and HTML.
- * This function skip through the Markdown image alt text, grab the
- * image link and write it to the buffer, then circle back to the
- * alt text to write it to the buffer.
  */
 void imageRule() {
     /**
@@ -475,14 +470,17 @@ void imageRule() {
     // square bracket.
     advance();
     advance();
-    Token altTextPrevToken = parser.previousToken;
-    Token altTextCurrToken = parser.currentToken;
 
-    writeToBuffer("<img src=\"", 10);
+    writeToBuffer("<img alt=\"", 10);
 
     while (parser.currentToken.type != TOKEN_CLOSE_SQUARE_BRACKET) {
+        // Write image alt text to buffer.
+        writeTokenToBuffer(parser.currentToken);
         advance();
     }
+
+    writeToBuffer("\" src=\"", 7);
+
     // 2 advance() to skip through the close square bracket and
     // open parenthesis token.
     advance();
@@ -493,26 +491,7 @@ void imageRule() {
         advance();
     }
 
-    writeToBuffer("\" alt=\"", 7);
-
-    Token closingParenPrevToken = parser.previousToken;
-    Token closingParenCurrToken = parser.currentToken;
-
-    // Reset both tokeniser and parser back to the image
-    // alt text section.
-    restoreParserAndTokeniser(altTextPrevToken, altTextCurrToken);
-
-    while (parser.currentToken.type != TOKEN_CLOSE_SQUARE_BRACKET) {
-        // Write image alt text to buffer.
-        writeTokenToBuffer(parser.currentToken);
-        advance();
-    }
-
     writeToBuffer("\">\n", 3);
-
-    // Set both tokeniser and parser to the state at the end
-    // of the image rule, which is the closing parenthesis token.
-    restoreParserAndTokeniser(closingParenPrevToken, closingParenCurrToken);
     
     // Skip through all left over newlines after image, if any.
     advance();

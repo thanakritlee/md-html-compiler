@@ -20,7 +20,7 @@ void image1() {
     char expectedBuffer[] = 
     "<!DOCTYPE html>\n"
     "<html>\n"
-    "<img src=\"/assets/image/tree.png\" alt=\"Image of a tree\">\n"
+    "<img alt=\"Image of a tree\" src=\"/assets/image/tree.png\">\n"
     "</html>\0";
     
     assertWithMsg(buffer.length == strlen(expectedBuffer), 
@@ -46,7 +46,7 @@ void imageNoAltText() {
     char expectedBuffer[] = 
     "<!DOCTYPE html>\n"
     "<html>\n"
-    "<img src=\"/assets/image/tree.png\" alt=\"\">\n"
+    "<img alt=\"\" src=\"/assets/image/tree.png\">\n"
     "</html>\0";
     
     assertWithMsg(buffer.length == strlen(expectedBuffer), 
