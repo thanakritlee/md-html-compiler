@@ -3,7 +3,7 @@
 #include <string.h>
 
 char* readFile(const char* path) {
-    // Read the Lox code file as a binary file into a file stream.
+    // Read the Markdown file as a binary file into a file stream.
     // Mode: r = read, b = binary file.
     FILE* file = fopen(path, "rb");
     if (file == NULL) {
@@ -50,5 +50,5 @@ void writeFile(const char* path, const char* contentMemAddr) {
     fprintf(fptr, "%s", contentMemAddr);
 
     // Close the file
-    fclose(fptr); 
+    fclose(fptr);
 }

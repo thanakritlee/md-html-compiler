@@ -6,7 +6,7 @@
 Buffer buffer;
 
 void initBuffer() {
-    buffer.capacity = 8;
+    buffer.capacity = 25000;
     buffer.mem = (char*)malloc(8 * sizeof(char));
     buffer.length = 0;
 }
@@ -31,7 +31,7 @@ void expandBuffer() {
         free(buffer.mem);
         exit(1);
     }
-    
+
     buffer.mem = result;
     buffer.capacity = newCapacity;
 }
@@ -39,12 +39,12 @@ void expandBuffer() {
 void writeToBuffer(const char* mem, int length) {
     // If the buffer is already at max capacity,
     // then expand the buffer memory space.
-    if (buffer.length + length > buffer.capacity) {
+    while (buffer.length + length > buffer.capacity) {
         expandBuffer();
     }
 
     for (int i = 0; i < length; i++) {
         buffer.mem[buffer.length] = mem[i];
-        buffer.length++;        
+        buffer.length++;
     }
 }
