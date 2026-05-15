@@ -11,7 +11,7 @@ void testInitBuffer() {
     Buffer buffer = getBuffer();
 
     assertWithMsg(buffer.length == 0, "Expect buffer to have length of 0");
-    assertWithMsg(buffer.capacity == 8, "Expect buffer to have initial capacity of 8");
+    assertWithMsg(buffer.capacity == 25000, "Expect buffer to have initial capacity of 25000");
 
     destroyBuffer();
 }
