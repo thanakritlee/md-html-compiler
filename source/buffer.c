@@ -7,7 +7,7 @@ Buffer buffer;
 
 void initBuffer() {
     buffer.capacity = 25000;
-    buffer.mem = (char*)malloc(8 * sizeof(char));
+    buffer.mem = (char*)malloc(25000 * sizeof(char));
     buffer.length = 0;
 }
 

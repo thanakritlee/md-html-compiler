@@ -1,105 +1,21 @@
-testrunner: test/testrunner.c test/common.o \
-			test/tokeniser/tokeniser-test-runner.o \
-			source/tokeniser.o \
-			test/tokeniser/heading.o \
-			test/tokeniser/space-and-tab.o \
-			test/tokeniser/newline-and-eof.o \
-			test/tokeniser/string.o \
-			test/tokeniser/number.o \
-			test/tokeniser/special-character.o \
-			test/parser/parser-test-runner.o \
-			test/parser/heading.o \
-			test/parser/paragraph.o \
-			test/parser/combination.o \
-			test/parser/image.o \
-			test/parser/code.o \
-			test/parser/list.o \
-			source/parser.o \
-			source/buffer.o \
-			test/buffer/buffer-test-runner.o \
-			test/buffer/buffer.o
-	gcc test/testrunner.c -o testrunner \
-	source/tokeniser.o test/common.o test/tokeniser/tokeniser-test-runner.o \
-	test/tokeniser/heading.o test/tokeniser/space-and-tab.o \
-	test/tokeniser/newline-and-eof.o test/tokeniser/string.o \
-	test/tokeniser/number.o test/tokeniser/special-character.o \
-	test/parser/parser-test-runner.o \
-	test/parser/heading.o test/parser/paragraph.o \
-	test/parser/combination.o test/parser/image.o \
-	test/parser/code.o test/parser/list.o \
-	source/parser.o source/buffer.o \
-	test/buffer/buffer-test-runner.o test/buffer/buffer.o
+OBJS = source/tokeniser.o source/parser.o source/buffer.o source/fileio.o
+HEADS = source/tokeniser.h source/buffer.h source/parser.h source/fileio.h
 
-test/tokeniser/tokeniser-test-runner.o: test/tokeniser/tokeniser-test-runner.c test/tokeniser/tokeniser-test-runner.h
-	gcc -c test/tokeniser/tokeniser-test-runner.c -o test/tokeniser/tokeniser-test-runner.o 
+TEST_OBJS = test/common.o test/tokeniser/tokeniser-test-runner.o test/tokeniser/heading.o test/tokeniser/space-and-tab.o \
+			test/tokeniser/newline-and-eof.o test/tokeniser/string.o test/tokeniser/number.o test/tokeniser/special-character.o \
+			test/parser/parser-test-runner.o test/parser/heading.o test/parser/paragraph.o test/parser/combination.o \
+			test/parser/image.o test/parser/code.o test/parser/list.o test/buffer/buffer-test-runner.o test/buffer/buffer.o
+TEST_HEADS = test/tokeniser/tokeniser-test-runner.h test/parser/parser-test-runner.h test/buffer/buffer-test-runner.h \
+			 test/common.h test/tokeniser/heading.h test/tokeniser/space-and-tab.h test/tokeniser/newline-and-eof.h \
+			 test/tokeniser/string.h test/tokeniser/number.h test/tokeniser/special-character.h test/parser/heading.h \
+			 test/parser/paragraph.h test/parser/combination.h test/parser/image.h test/parser/code.h test/parser/list.h \
+			 test/buffer/buffer.h
 
-test/parser/parser-test-runner.o: test/parser/parser-test-runner.c test/parser/parser-test-runner.h
-	gcc -c test/parser/parser-test-runner.c -o test/parser/parser-test-runner.o
+testrunner: test/testrunner.c $(OBJS) $(TEST_OBJS) $(TEST_HEADS)
+	gcc test/testrunner.c -o testrunner $(OBJS) $(TEST_OBJS)
 
-test/buffer/buffer-test-runner.o: test/buffer/buffer-test-runner.c test/buffer/buffer-test-runner.h
-	gcc -c test/buffer/buffer-test-runner.c -o test/buffer/buffer-test-runner.o
+compiler: source/main.c $(OBJS) $(HEADS)
+	gcc source/main.c -o compiler $(OBJS)
 
-test/common.o: test/common.c test/common.h
-	gcc -c test/common.c -o test/common.o
-
-test/tokeniser/heading.o: test/tokeniser/heading.c test/tokeniser/heading.h
-	gcc -c test/tokeniser/heading.c -o test/tokeniser/heading.o
-
-test/tokeniser/space-and-tab.o: test/tokeniser/space-and-tab.c test/tokeniser/space-and-tab.h
-	gcc -c test/tokeniser/space-and-tab.c -o test/tokeniser/space-and-tab.o
-
-test/tokeniser/newline-and-eof.o: test/tokeniser/newline-and-eof.c test/tokeniser/newline-and-eof.h
-	gcc -c test/tokeniser/newline-and-eof.c -o test/tokeniser/newline-and-eof.o
-
-test/tokeniser/string.o: test/tokeniser/string.c test/tokeniser/string.h
-	gcc -c test/tokeniser/string.c -o test/tokeniser/string.o
-
-test/tokeniser/number.o: test/tokeniser/number.c test/tokeniser/number.h
-	gcc -c test/tokeniser/number.c -o test/tokeniser/number.o
-
-test/tokeniser/special-character.o: test/tokeniser/special-character.c test/tokeniser/special-character.h
-	gcc -c test/tokeniser/special-character.c -o test/tokeniser/special-character.o
-
-test/parser/heading.o: test/parser/heading.c test/parser/heading.h
-	gcc -c test/parser/heading.c -o test/parser/heading.o
-
-test/parser/paragraph.o: test/parser/paragraph.c test/parser/paragraph.h
-	gcc -c test/parser/paragraph.c -o test/parser/paragraph.o
-
-test/parser/combination.o: test/parser/combination.c test/parser/combination.h
-	gcc -c test/parser/combination.c -o test/parser/combination.o
-
-test/parser/image.o: test/parser/image.c test/parser/image.h
-	gcc -c test/parser/image.c -o test/parser/image.o
-
-test/parser/code.o: test/parser/code.c test/parser/code.h
-	gcc -c test/parser/code.c -o test/parser/code.o
-
-test/parser/list.o: test/parser/list.c test/parser/list.h
-	gcc -c test/parser/list.c -o test/parser/list.o
-
-test/buffer/buffer.o: test/buffer/buffer.c test/buffer/buffer.h
-	gcc -c test/buffer/buffer.c -o test/buffer/buffer.o
-
-source/tokeniser.o: source/tokeniser.c source/tokeniser.h
-	gcc -c source/tokeniser.c -o source/tokeniser.o
-
-source/buffer.o: source/buffer.c source/buffer.h
-	gcc -c source/buffer.c -o source/buffer.o
-
-source/parser.o: source/parser.c source/parser.h
-	gcc -c source/parser.c -o source/parser.o
-
-source/fileio.o: source/fileio.c source/fileio.h
-	gcc -c source/fileio.c -o source/fileio.o
-
-compiler: source/main.c \
-		  source/fileio.o \
-		  source/buffer.o \
-		  source/tokeniser.o \
-		  source/parser.o
-	gcc source/main.c -o compiler \
-	source/fileio.o \
-	source/buffer.o \
-	source/tokeniser.o \
-	source/parser.o
+clean:
+	rm -f compiler testrunner
